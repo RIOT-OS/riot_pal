@@ -54,7 +54,7 @@ class LLShell(BaseDevice):
         try:
             if data[0] == self.SUCCESS:
                 cmd_info['data'] = self._try_parse_data(data)
-                cmd_info['msg '] = "EOK-command success [0]"
+                cmd_info['msg'] = "EOK-command success [0]"
                 cmd_info['result'] = self.RESULT_SUCCESS
                 logging.debug(self.RESULT_SUCCESS)
             else:
@@ -117,6 +117,9 @@ class LLShell(BaseDevice):
 
     def read_bits(self, index, offset, bit_amount):
         """Read specific bits in the register map."""
+        bit_amount = int(bit_amount)
+        offset = int(offset)
+        index = int(index)
         logging.debug("FXN: read_bits(%r, %r, %r)", index, offset, bit_amount)
         bytes_to_read = int((bit_amount - 1 + offset)/8 + 1)
         bit_mask = (2 ** bit_amount) - 1
@@ -132,6 +135,9 @@ class LLShell(BaseDevice):
 
     def write_bits(self, index, offset, bit_amount, data):
         """Modifies specific bits in the register map."""
+        bit_amount = int(bit_amount)
+        offset = int(offset)
+        index = int(index)
         cmd_sent = ""
         logging.debug("FXN: write_bits"
                       "(%r, %r, %r, %r)", index, offset, bit_amount, data)
