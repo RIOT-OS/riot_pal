@@ -37,54 +37,84 @@ class LLMemMapIf(LLShell):
         """Reads a set of registers defined by the memory map."""
         response = []
         for cmd, val in self.cmd_list.items():
+            # Supress unused variable warning
+            val = val
             if cmd.startswith(cmd_name):
                 response.append(self.read_reg(cmd))
         return response
 
     def read_reg(self, cmd_name, offset=0, size=None):
-        """Read a register defined by the memory map."""
+        """Read a register defined by the memory map.
+
+        Keyword arguments:
+        offset -- the number of elements to offset in an array
+        size   -- the number of elements to read in an array
+        """
         cmd = self.cmd_list[cmd_name]
         response = None
         if size is None:
             size = cmd['total_size']
         if cmd['is_bitfield'] is 'True':
-            response = self.read_bits(cmd['offset'], cmd['bit_offset'], cmd['bits'])
+            response = self.read_bits(cmd['offset'],
+                                      cmd['bit_offset'],
+                                      cmd['bits'])
         elif cmd['size'] != cmd['total_size']:
-            offset += int(cmd['offset'])
+            offset = int(cmd['offset']) + (offset * int(cmd['size']))
             if size is None:
                 size = cmd['total_size']
+            else:
+                size = size * int(cmd['size'])
             response = self.read_bytes(offset, size)
         else:
             response = self.read_bytes(cmd['offset'], cmd['total_size'])
-        response['msg'] = 'cmd={} response={}'.format(cmd_name, response['msg'])
+        response['msg'] = 'cmd={} response={}'.format(cmd_name,
+                                                      response['msg'])
         return response
 
     def write_reg(self, cmd_name, data, offset=0):
-        """Writes a register defined by the memory map."""
+        """Writes a register defined by the memory map.
+
+        Keyword arguments:
+        offset -- the number of elements to offset in an array
+        """
         cmd = self.cmd_list[cmd_name]
         response = None
         if cmd['is_bitfield'] is 'True':
-            response = self.write_bits(cmd['offset'], cmd['bit_offset'], cmd['bits'], data)
+            response = self.write_bits(cmd['offset'],
+                                       cmd['bit_offset'],
+                                       cmd['bits'], data)
         elif cmd['size'] != cmd['total_size']:
-            offset += int(cmd['offset'])
+            offset = int(cmd['offset']) + (offset * int(cmd['size']))
             response = self.write_bytes(offset, data)
         else:
             response = self.write_bytes(cmd['offset'], data)
-        response['msg'] = 'cmd={} response={}'.format(cmd_name, response['msg'])
+        response['msg'] = 'cmd={} response={}'.format(cmd_name,
+                                                      response['msg'])
         return response
 
+
 def main():
-    from pprint import pprint
     """Tests all functions supported functions."""
+    from pprint import pprint
     logging.getLogger().setLevel(logging.DEBUG)
 
     mmif = LLMemMapIf("mem_map.csv", 'serial', '/dev/ttyUSB0')
     print('==================================================================')
-    pprint(mmif.read_struct('sys'))
-    pprint(mmif.read_reg('user_reg.64', 0, 10))
-    pprint(mmif.write_reg('user_reg.64', [6, 6, 6], 2))
-    pprint(mmif.read_reg('user_reg.64'))
+    try:
+        pprint(mmif.read_struct('sys'))
+        pprint(mmif.read_reg('user_reg.64', 0, 10))
+        pprint(mmif.write_reg('user_reg.64', [6, 6, 6], 2))
+        pprint(mmif.write_reg('user_reg.64', [6, 6, 6], 2))
+        pprint(mmif.read_reg('user_reg.64'))
+    except KeyError:
+        print("WARNING: Unrecognized mem_map")
     pprint(mmif.cmd_list)
+    for cmd, val in mmif.cmd_list.items():
+        # Supress unused variable warning
+        val = val
+        pprint(cmd)
+        pprint(mmif.read_reg(cmd))
+
 
 if __name__ == "__main__":
     main()

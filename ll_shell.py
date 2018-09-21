@@ -16,7 +16,6 @@ except SystemError:
     from base_device import BaseDevice
 
 
-
 class LLShell(BaseDevice):
     """Handles basic functions and commands for memory map interface."""
     READ_REG_CMD = "rr"
