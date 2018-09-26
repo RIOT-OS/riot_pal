@@ -59,7 +59,7 @@ class BaseDevice:
 
     @classmethod
     def copy_driver(cls, device):
-        """Copies an the driver instance so multiple devices can use one driver."""
+        """Copies the driver instance so many devices can use one driver."""
         logging.debug("Cloning Driver: %r", device._driver)
         return cls(dev_type='driver', driver=device._driver)
 
