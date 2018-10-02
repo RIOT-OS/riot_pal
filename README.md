@@ -1,8 +1,7 @@
-Test Simulator Interface Library
+RIOT PAL (RIOT Protocol Abstraction Layer)
 ================================
 
 Introduction
 ------------
 
-This library provides a Python interface to the test simulator board
-using a serial link.
+A set of python modules that abstract away and standardize shell based commands in RIOT and for bare metal memory map access.
