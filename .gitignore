@@ -1,2 +1,6 @@
 # Python compiled files
 *.pyc
+dist/
+build/
+riot_pal.egg-info
+*.csv
