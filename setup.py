@@ -8,7 +8,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name="riot_pal",
-    version="0.0.1",
+    version="0.0.2",
     author="RIOT OS",
     author_email="devel@riot-os.org",
     description="A protocol abstraction layer for RIOT and low level devices",
@@ -23,4 +23,7 @@ setup(
         "Development Status :: 2 - Pre-Alpha",
         "Intended Audience :: Developers"
     ],
+    setup_requires=["pytest-runner"],
+    tests_require=["pytest"],
+    install_requires=['pyserial'],
 )

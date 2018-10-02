@@ -2,5 +2,5 @@
 *.pyc
 dist/
 build/
-riot_pal.egg-info
+*.egg-info
 *.csv
