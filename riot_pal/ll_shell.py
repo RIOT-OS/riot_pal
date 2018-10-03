@@ -3,9 +3,8 @@
 # This file is subject to the terms and conditions of the MIT License. See the
 # file LICENSE in the top level directory for more details.
 # SPDX-License-Identifier:    MIT
-"""@package PyToAPI
+"""Low Level Shell for RIOT PAL
 This module handles functions for a low level shell interface.
-
 """
 import logging
 import errno

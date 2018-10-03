@@ -3,9 +3,8 @@
 # This file is subject to the terms and conditions of the MIT License. See the
 # file LICENSE in the top level directory for more details.
 # SPDX-License-Identifier:    MIT
-"""@package PyToAPI
+"""Serial Driver for RIOT PAL
 This module handles generic connection and IO to the serial driver.
-
 """
 import logging
 import time
@@ -16,7 +15,6 @@ import serial.tools.list_ports
 class SerialDriver:
     """Contains all reusable functions for connecting, sending and recieveing
     data.
-
     """
     DEFAULT_TIMEOUT = 1
     DEFAULT_BAUDRATE = 115200

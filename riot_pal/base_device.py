@@ -3,9 +3,18 @@
 # This file is subject to the terms and conditions of the MIT License. See the
 # file LICENSE in the top level directory for more details.
 # SPDX-License-Identifier:    MIT
-"""@package PyToAPI
-This module provice the base interface for a device to a driver.
+"""Abstract Base Device for RIOT PAL
+This module is the abstract device that interfaces to a driver.  It handles
+the selection and initialzation of the driver.
 
+Example:
+    class ApplicationDevice(BaseDevice):
+        def show_example(self):
+            self._write('Send Example')
+            print(self._read())
+
+    example_use_case = ApplicationDevice('serial', port='my/port/name')
+    example_use_case.show_example()
 """
 import logging
 try:
@@ -15,7 +24,12 @@ except SystemError:
 
 
 class BaseDevice:
-    """Instance for devices to connect and untilize drivers."""
+    """Instance for devices to connect and utilize drivers.
+
+    Args:
+        *args: Variable length argument list.
+        **kwargs: Arbitrary keyword arguments.
+    """
 
     def __init__(self, *args, **kwargs):
         self._driver = driver_manager.driver_from_config(*args, **kwargs)
@@ -25,11 +39,19 @@ class BaseDevice:
         self._driver.close()
 
     def _read(self):
-        """Reads data from the driver."""
+        """Reads data from the driver.
+
+        Returns:
+            str: string of data if success, ERR string if failed
+        """
         return self._driver.read()
 
     def _write(self, data):
-        """Writes data to the driver."""
+        """Writes data to the driver.
+
+        Args:
+            data(str): Variable length argument list.
+        """
         return self._driver.write(data)
 
     def is_connected_to_board(self):

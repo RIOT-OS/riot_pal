@@ -3,8 +3,8 @@
 # This file is subject to the terms and conditions of the MIT License. See the
 # file LICENSE in the top level directory for more details.
 # SPDX-License-Identifier:    MIT
-"""@package PyToAPI
-This module handles offset and sizes dictated by the memory map for PHiLIP.
+"""Low Level Memory Map Interface for RIOT PAL
+This module handles offset and sizes dictated a memory map.
 """
 import logging
 import csv

@@ -3,8 +3,8 @@
 # This file is subject to the terms and conditions of the MIT License. See the
 # file LICENSE in the top level directory for more details.
 # SPDX-License-Identifier:    MIT
-"""@package PyToAPI
-This module assigns the drivers to the devices.
+"""Driver Manager for RIOT PAL
+This module assigns drivers to devices.
 """
 import logging
 try:

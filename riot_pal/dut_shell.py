@@ -3,7 +3,7 @@
 # This file is subject to the terms and conditions of the MIT License. See the
 # file LICENSE in the top level directory for more details.
 # SPDX-License-Identifier:    MIT
-"""@package PyToAPI
+"""Device Under Tests Shell for RIOT PAL
 This module handles parsing of information from RIOT shell base tests.
 """
 import logging
