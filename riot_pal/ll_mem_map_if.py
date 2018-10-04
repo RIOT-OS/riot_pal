@@ -87,7 +87,7 @@ class LLMemMapIf(LLShell):
             offset = int(cmd['offset']) + (offset * int(cmd['size']))
             response = self.write_bytes(offset, data)
         else:
-            response = self.write_bytes(cmd['offset'], data)
+            response = self.write_bytes(cmd['offset'], data, int(cmd['size']))
         response['msg'] = 'cmd={} response={}'.format(cmd_name,
                                                       response['msg'])
         return response

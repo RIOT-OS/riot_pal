@@ -20,7 +20,7 @@ setup(
     url="https://github.com/RIOT-OS",
     packages=find_packages(),
     platforms='any',
-    python_requires='>=3.3.*',
+    python_requires='>=3.4.*',
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
@@ -29,6 +29,6 @@ setup(
         "Intended Audience :: Developers"
     ],
     setup_requires=["pytest-runner"],
-    tests_require=["pytest"],
+    tests_require=["pytest", "pytest-regtest", "pprint"],
     install_requires=['pyserial'],
 )

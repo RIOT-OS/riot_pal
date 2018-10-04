@@ -103,6 +103,10 @@ class LLShell(BaseDevice):
         logging.debug("FXN: write_bytes(%r,%r)", index, data)
         cmd = "{} {}".format(self.WRITE_REG_CMD, index)
         if isinstance(data, list):
+            if isinstance(data[0], str):
+                if data[0].startswith('0x'):
+                    data = data[0].replace('0x', '')
+                    data = bytes.fromhex(data)
             for i in range(0, len(data)):
                 if len(data) - i - 1 < len(data):
                     cmd += ' {}'.format(data[len(data) - i - 1])
