@@ -9,10 +9,7 @@ This module handles functions for a low level shell interface.
 import logging
 import errno
 import os
-try:
-    from .base_device import BaseDevice
-except SystemError:
-    from base_device import BaseDevice
+from .base_device import BaseDevice
 
 
 class LLShell(BaseDevice):
@@ -72,11 +69,13 @@ class LLShell(BaseDevice):
 
     def send_cmd(self, send_cmd):
         """Returns a dictionary with information from the event.
-
-        msg - The message from the response, only used for information.
-        cmd - The command sent, used to track what has occured.
-        data - Parsed information of the data requested.
-        result - Either success, error or timeout.
+        Returns:
+            dict:
+            The return hold dict values in the following keys::
+            msg - The message from the response, only used for information.
+            cmd - The command sent, used to track what has occured.
+            data - Parsed information of the data requested.
+            result - Either success, error or timeout.
         """
         self._write(send_cmd)
         data = self._read()
@@ -169,56 +168,3 @@ class LLShell(BaseDevice):
         """Resets the device."""
         logging.debug("FXN: reset_mcu")
         return self.send_cmd(self.RESET_CMD)
-
-
-def test_bpt():
-    """Tests if basic functions work on the BPT memory map"""
-    b_if = LLShell()
-    b_if.reset_mcu()
-    b_if.execute_changes()
-    index = 152
-    b_if.read_bytes(index)
-    b_if.write_bytes(index, 0x0a0b0c0d)
-    b_if.read_bytes(index, 4)
-    b_if.write_bytes(index, 0x01, 1)
-    b_if.read_bytes(index, 4)
-    b_if.write_bytes(index, [9, 8, 7, 6, 5, 4, 3, 2])
-    b_if.read_bytes(index, 8)
-    b_if.write_bytes(index, 0)
-    b_if.read_bytes(index, 1)
-
-    b_if.write_bits(index, 0, 1, 1)
-    b_if.read_bytes(index, 1)
-    b_if.read_bits(index, 0, 1)
-
-    b_if.write_bits(index, 0, 2, 2)
-    b_if.read_bits(index, 0, 2)
-
-    b_if.write_bits(index, 1, 3, 6)
-    b_if.read_bits(index, 1, 3)
-
-    b_if.write_bits(index, 0, 8, 0xa5)
-    b_if.read_bits(index, 0, 8)
-
-    b_if.write_bits(index, 1, 7, 0x7F)
-    b_if.read_bits(index, 1, 7)
-
-    b_if.write_bits(index, 0, 9, 0x142)
-    b_if.read_bits(index, 0, 9)
-
-    b_if.write_bits(index, 1, 1, 1)
-    b_if.read_bits(index, 0, 3)
-
-    b_if.write_bits(index, 2, 1, 1)
-    b_if.read_bits(index, 0, 3)
-    b_if.reset_mcu()
-
-
-def main():
-    """Tests DeviceShellIf class"""
-    logging.getLogger().setLevel(logging.DEBUG)
-    test_bpt()
-
-
-if __name__ == "__main__":
-    main()

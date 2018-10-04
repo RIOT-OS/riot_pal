@@ -17,26 +17,44 @@ Example:
     example_use_case.show_example()
 """
 import logging
-try:
-    from . import driver_manager
-except SystemError:
-    import driver_manager
+from .serial_driver import SerialDriver
+from .riot_driver import RiotDriver
 
 
 class BaseDevice:
     """Instance for devices to connect and utilize drivers.
 
     Args:
+        dev_type(str): Specify the type of driver to use.
+            serial, riot, driver are valid inputs
         *args: Variable length argument list.
         **kwargs: Arbitrary keyword arguments.
     """
 
-    def __init__(self, *args, **kwargs):
-        self._driver = driver_manager.driver_from_config(*args, **kwargs)
+    def __init__(self, driver_type='serial', *args, **kwargs):
+        if driver_type == 'serial':
+            self._driver = SerialDriver(*args, **kwargs)
+        elif driver_type == 'riot':
+            self._driver = RiotDriver(*args, **kwargs)
+        elif driver_type == 'driver':
+            self._driver = kwargs['driver']
+        else:
+            raise NotImplementedError()
 
     def close(self):
         """Closes the device connection."""
         self._driver.close()
+
+        #
+    def _driver_from_config(self, dev_type='serial', *args, **kwargs):
+        """Returns driver instance given configuration"""
+        if dev_type == 'serial':
+            return SerialDriver(*args, **kwargs)
+        elif dev_type == 'riot':
+            return RiotDriver(*args, **kwargs)
+        elif dev_type == 'driver':
+            return kwargs['driver']
+        raise NotImplementedError()
 
     def _read(self):
         """Reads data from the driver.
@@ -54,46 +72,8 @@ class BaseDevice:
         """
         return self._driver.write(data)
 
-    def is_connected_to_board(self):
-        """Dummy - confirm if a connection is for target board."""
-        logging.warning("Check if board is connected: dummy should be"
-                        " implmeneted in subclasses")
-        raise NotImplementedError()
-
-    @classmethod
-    def from_autodetect(cls, *args, **dev_config):
-        """Connects to a range of possible configurations."""
-        configs = driver_manager.available_configs(*args, **dev_config)
-        logging.debug("Configs: %r", configs)
-        for config in configs:
-            for retry in range(0, 2):
-                logging.debug("Autodetect attempt: %d", retry)
-                conn = cls(**config)
-                try:
-                    if conn.is_connected_to_board():
-                        return conn
-                except Exception as err:
-                    logging.debug("Cannot connect: %r", err)
-                conn.close()
-
-        raise ValueError("Could not locate board, check if board is"
-                         "connected or is_connected_to_board is correct")
-
     @classmethod
     def copy_driver(cls, device):
         """Copies the driver instance so many devices can use one driver."""
         logging.debug("Cloning Driver: %r", device._driver)
-        return cls(dev_type='driver', driver=device._driver)
-
-
-def main():
-    """Tests basic usage of the class
-
-    Used for unit testing, information should be confirm with DEBUG info.
-    """
-    logging.getLogger().setLevel(logging.DEBUG)
-    BaseDevice()
-
-
-if __name__ == "__main__":
-    main()
+        return cls(driver_type='driver', driver=device._driver)

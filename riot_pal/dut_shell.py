@@ -7,10 +7,7 @@
 This module handles parsing of information from RIOT shell base tests.
 """
 import logging
-try:
-    from .base_device import BaseDevice
-except SystemError:
-    from base_device import BaseDevice
+from .base_device import BaseDevice
 
 
 class DutShell(BaseDevice):
@@ -41,10 +38,13 @@ class DutShell(BaseDevice):
     def send_cmd(self, send_cmd):
         """Returns a dictionary with information from the event.
 
-        msg - The message from the response, only used for information.
-        cmd - The command sent, used to track what has occured.
-        data - Parsed information of the data requested.
-        result - Either success, error or timeout.
+        Returns:
+            dict:
+            The return hold dict values in the following keys::
+                msg - The message from the response, only used for information.
+                cmd - The command sent, used to track what has occured.
+                data - Parsed information of the data requested.
+                result - Either success, error or timeout.
         """
         self._write(send_cmd)
         response = self._read()
@@ -72,19 +72,3 @@ class DutShell(BaseDevice):
             cmd_info['result'] = self.RESULT_TIMEOUT
             logging.debug(self.RESULT_TIMEOUT)
         return cmd_info
-
-
-def test_node():
-    """Simple test to ensure commuication with the node."""
-    b_if = DutShell()
-    b_if.send_cmd('i2c_get_id')
-
-
-def main():
-    """Tests TestShellIf class"""
-    logging.getLogger().setLevel(logging.DEBUG)
-    test_node()
-
-
-if __name__ == "__main__":
-    main()

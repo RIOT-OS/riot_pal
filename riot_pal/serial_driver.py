@@ -78,29 +78,3 @@ class SerialDriver:
                                           'timeout': timeout})
         logging.debug("Ports available: %r", available_configs)
         return available_configs
-
-
-def main():
-    """Tests basic usage of the class
-
-    Used for unit testing, information should be confirm with DEBUG info.
-    """
-    logging.getLogger().setLevel(logging.DEBUG)
-    SerialDriver.get_configs()
-    ddif = SerialDriver()
-    ddif.close()
-    ddif = SerialDriver(port='/dev/ttyACM0')
-    logging.debug("Used devices: %r", ddif.used_devices)
-    ddif.close()
-    ddif = SerialDriver(port='/dev/ttyACM0', baudrate=115200)
-    logging.debug("Used devices: %r", ddif.used_devices)
-    ddif.close()
-    ddif = SerialDriver(port='/dev/ttyACM0', baudrate=115200, timeout=1)
-    logging.debug("Used devices: %r", ddif.used_devices)
-    ddif.close()
-
-    logging.debug("Used devices: %r", ddif.used_devices)
-
-
-if __name__ == "__main__":
-    main()

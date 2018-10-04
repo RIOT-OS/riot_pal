@@ -35,11 +35,3 @@ class RiotDriver:
     def get_configs():
         """Gets available serial configurations."""
         raise NotImplementedError()
-
-
-def main():
-    """Tests basic usage of the class"""
-
-
-if __name__ == "__main__":
-    main()

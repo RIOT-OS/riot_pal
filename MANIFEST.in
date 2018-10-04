@@ -1,1 +1,1 @@
-include mem_map/philip_mem_map.csv
+include riot_pal/mem_map/*

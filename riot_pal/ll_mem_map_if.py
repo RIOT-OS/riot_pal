@@ -8,10 +8,7 @@ This module handles offset and sizes dictated a memory map.
 """
 import logging
 import csv
-try:
-    from .ll_shell import LLShell
-except SystemError:
-    from ll_shell import LLShell
+from .ll_shell import LLShell
 
 
 class LLMemMapIf(LLShell):
@@ -46,9 +43,10 @@ class LLMemMapIf(LLShell):
     def read_reg(self, cmd_name, offset=0, size=None):
         """Read a register defined by the memory map.
 
-        Keyword arguments:
-        offset -- the number of elements to offset in an array
-        size   -- the number of elements to read in an array
+        Args:
+            cmd_name(str): The name of the register to read.
+            offset(int): The number of elements to offset in an array.
+            size(int): The number of elements to read in an array.
         """
         cmd = self.cmd_list[cmd_name]
         response = None
@@ -74,8 +72,10 @@ class LLMemMapIf(LLShell):
     def write_reg(self, cmd_name, data, offset=0):
         """Writes a register defined by the memory map.
 
-        Keyword arguments:
-        offset -- the number of elements to offset in an array
+        Args:
+            cmd_name(str): The name of the register to read.
+            data: The data to write to the register.
+            offset(int): The number of elements to offset in an array.
         """
         cmd = self.cmd_list[cmd_name]
         response = None
@@ -91,30 +91,3 @@ class LLMemMapIf(LLShell):
         response['msg'] = 'cmd={} response={}'.format(cmd_name,
                                                       response['msg'])
         return response
-
-
-def main():
-    """Tests all functions supported functions."""
-    from pprint import pprint
-    logging.getLogger().setLevel(logging.DEBUG)
-
-    mmif = LLMemMapIf("mem_map.csv", 'serial', '/dev/ttyUSB0')
-    print('==================================================================')
-    try:
-        pprint(mmif.read_struct('sys'))
-        pprint(mmif.read_reg('user_reg.64', 0, 10))
-        pprint(mmif.write_reg('user_reg.64', [6, 6, 6], 2))
-        pprint(mmif.write_reg('user_reg.64', [6, 6, 6], 2))
-        pprint(mmif.read_reg('user_reg.64'))
-    except KeyError:
-        print("WARNING: Unrecognized mem_map")
-    pprint(mmif.cmd_list)
-    for cmd, val in mmif.cmd_list.items():
-        # Supress unused variable warning
-        val = val
-        pprint(cmd)
-        pprint(mmif.read_reg(cmd))
-
-
-if __name__ == "__main__":
-    main()

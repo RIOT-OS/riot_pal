@@ -3,6 +3,7 @@ from pprint import pformat
 from pathlib import Path
 from serial import SerialException
 from riot_pal import LLMemMapIf
+from riot_pal import PHILIP_MEM_MAP_PATH
 import helpers
 
 
@@ -14,7 +15,7 @@ def try_connect(mem_map='mem_map.csv'):
 
 
 def test_philip_mem_map_basic(regtest):
-    mmif = try_connect(str(Path(__file__).parents[1]) + '/mem_map/philip_mem_map.csv')
+    mmif = try_connect(PHILIP_MEM_MAP_PATH)
     regtest.write(pformat(mmif.cmd_list) + '\n')
     regtest.write(pformat(mmif.reset_mcu()) + '\n')
     regtest.write(pformat(mmif.execute_changes()) + '\n')
@@ -22,7 +23,7 @@ def test_philip_mem_map_basic(regtest):
 
 
 def test_philip_mem_map_read_reg(regtest):
-    mmif = try_connect(str(Path(__file__).parents[1]) + '/mem_map/philip_mem_map.csv')
+    mmif = try_connect(PHILIP_MEM_MAP_PATH)
     regtest.write(pformat(mmif.reset_mcu()) + '\n')
 
     for cmd in sorted(mmif.cmd_list):
@@ -38,7 +39,7 @@ def test_philip_mem_map_read_reg(regtest):
 
 
 def test_philip_mem_map_write_reg(regtest):
-    mmif = try_connect(str(Path(__file__).parents[1]) + '/mem_map/philip_mem_map.csv')
+    mmif = try_connect(PHILIP_MEM_MAP_PATH)
     regtest.write(pformat(mmif.reset_mcu()) + '\n')
 
     for cmd in sorted(mmif.cmd_list):

@@ -10,7 +10,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name="riot_pal",
-    version="0.0.2",
+    version="0.1.2",
     author="RIOT OS",
     author_email="devel@riot-os.org",
     license="MIT",
@@ -21,6 +21,7 @@ setup(
     packages=find_packages(),
     platforms='any',
     python_requires='>=3.4.*',
+    include_package_data=True,
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
