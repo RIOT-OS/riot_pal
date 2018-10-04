@@ -1,11 +1,10 @@
-# Copyright (C) 2018 Kevin Weiss <kevin.weiss@haw-hamburg.de>
+# Copyright (c) 2018 Kevin Weiss, for HAW Hamburg  <kevin.weiss@haw-hamburg.de>
 #
-# This file is subject to the terms and conditions of the GNU Lesser
-# General Public License v2.1. See the file LICENSE in the top level
-# directory for more details.
-"""@package PyToAPI
-This module handles generic connection and IO to the serial driver.
-
+# This file is subject to the terms and conditions of the MIT License. See the
+# file LICENSE in the top level directory for more details.
+# SPDX-License-Identifier:    MIT
+"""RIOT Driver for RIOT PAL
+This module handles generic connection and IO to the make term.
 """
 
 

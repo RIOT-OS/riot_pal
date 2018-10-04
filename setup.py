@@ -1,9 +1,11 @@
-#!/usr/bin/env python
-
+#!/usr/bin/env python3
+"""
+    Setup file for riot_pal.
+"""
 from setuptools import setup, find_packages
 
 with open("README.md", "r") as fh:
-    long_description = fh.read()
+    LONG_DESCRIPTION = fh.read()
 
 
 setup(
@@ -11,11 +13,14 @@ setup(
     version="0.0.2",
     author="RIOT OS",
     author_email="devel@riot-os.org",
+    license="MIT",
     description="A protocol abstraction layer for RIOT and low level devices",
-    long_description=long_description,
+    long_description=LONG_DESCRIPTION,
     long_description_content_type="text/markdown",
     url="https://github.com/RIOT-OS",
     packages=find_packages(),
+    platforms='any',
+    python_requires='>=3.3.*',
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",

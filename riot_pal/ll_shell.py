@@ -1,11 +1,10 @@
-# Copyright (C) 2018 Kevin Weiss <kevin.weiss@haw-hamburg.de>
+# Copyright (c) 2018 Kevin Weiss, for HAW Hamburg  <kevin.weiss@haw-hamburg.de>
 #
-# This file is subject to the terms and conditions of the GNU Lesser
-# General Public License v2.1. See the file LICENSE in the top level
-# directory for more details.
-"""@package PyToAPI
+# This file is subject to the terms and conditions of the MIT License. See the
+# file LICENSE in the top level directory for more details.
+# SPDX-License-Identifier:    MIT
+"""Low Level Shell for RIOT PAL
 This module handles functions for a low level shell interface.
-
 """
 import logging
 import errno
