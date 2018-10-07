@@ -1,6 +1,10 @@
-"""Tests all functions supported functions."""
+# Copyright (c) 2018 Kevin Weiss, for HAW Hamburg  <kevin.weiss@haw-hamburg.de>
+#
+# This file is subject to the terms and conditions of the MIT License. See the
+# file LICENSE in the top level directory for more details.
+# SPDX-License-Identifier:    MIT
+"""Tests all commands imported by mem_map file."""
 from pprint import pformat
-from pathlib import Path
 from serial import SerialException
 from riot_pal import LLMemMapIf
 from riot_pal import PHILIP_MEM_MAP_PATH
@@ -27,7 +31,6 @@ def test_philip_mem_map_read_reg(regtest):
     regtest.write(pformat(mmif.reset_mcu()) + '\n')
 
     for cmd in sorted(mmif.cmd_list):
-        # Supress unused variable warning
         cmd_vals = mmif.cmd_list[cmd]
         read_val = mmif.read_reg(cmd)
         if 'DEVICE_SPECIFIC' in cmd_vals['flag']:
@@ -43,7 +46,6 @@ def test_philip_mem_map_write_reg(regtest):
     regtest.write(pformat(mmif.reset_mcu()) + '\n')
 
     for cmd in sorted(mmif.cmd_list):
-        # Supress unused variable warning
         read_val = mmif.read_reg(cmd)
         write_ret = mmif.write_reg(cmd, helpers.try_add(read_val['data']))
         read_val = mmif.read_reg(cmd)
