@@ -6,75 +6,79 @@
 """Serial Driver for RIOT PAL
 This module handles generic connection and IO to the serial driver.
 """
+import os
 import logging
 import time
 import serial
-import serial.tools.list_ports
 
 
 class SerialDriver:
-    """Contains all reusable functions for connecting, sending and recieveing
-    data.
+    """Contains all reusable functions for connecting, sending and receiving
+    data.  Arguments are passed through to the standard pyserial driver.  The
+    defaults are changed.  Also if env variables are defined they get used as
+    defaults.
+
+    Args:
+        *args: Variable length argument list.
+        **kwargs: Arbitrary keyword arguments.
     """
     DEFAULT_TIMEOUT = 1
     DEFAULT_BAUDRATE = 115200
     DEFAULT_PORT = '/dev/ttyACM0'
-
-    used_devices = []
 
     def __init__(self, *args, **kwargs):
         if 'timeout' not in kwargs:
             kwargs['timeout'] = self.DEFAULT_TIMEOUT
         if len(args) < 2:
             if 'baudrate' not in kwargs:
-                kwargs['baudrate'] = self.DEFAULT_BAUDRATE
+                if 'BAUD' in os.environ:
+                    kwargs['baudrate'] = os.environ['BAUD']
+                else:
+                    kwargs['baudrate'] = self.DEFAULT_BAUDRATE
         if len(args) == 0:
             if 'port' not in kwargs:
-                kwargs['port'] = self.DEFAULT_PORT
+                if 'PORT' in os.environ:
+                    kwargs['port'] = os.environ['PORT']
+                else:
+                    kwargs['port'] = self.DEFAULT_PORT
         logging.debug("Serial connection args %r -- %r", args, kwargs)
 
         try:
             self._dev = serial.Serial(*args, **kwargs)
         except serial.SerialException:
             self._dev = serial.serial_for_url(*args, **kwargs)
-
-        SerialDriver.used_devices.append(self._dev.port)
+        # Used to clear the cpu and mcu buffer from startup junk data
         time.sleep(0.1)
-        # A time delay is needed ensure everything is flushed correctly
-        self._dev.reset_input_buffer()
-        self._dev.reset_output_buffer()
+        self.write('')
+        self.read()
 
     def close(self):
         """Close serial connection."""
         logging.debug("Closing %s", self._dev.port)
-        SerialDriver.used_devices.remove(self._dev.port)
         self._dev.close()
 
     def read(self):
-        """Read and decode data."""
+        """Read and decode to utf-8 data.
+
+        Returns:
+            str: string of data if success, ERR string if failed.
+        """
         try:
             res_bytes = self._dev.readline()
-            response = res_bytes.decode("utf-8", errors="replace")
-        except Exception as exc:
+            response = res_bytes.decode("utf-8", errors="ignore")
+        except (ValueError, TypeError, serial.SerialException) as exc:
             response = 'ERR'
             logging.debug(exc)
         logging.debug("Response: %s", response.replace('\n', ''))
         return response
 
     def write(self, data):
-        """Tries write data."""
+        """Writes data to a driver.  It will encode to utf-8 and add a newline
+
+        Args:
+            data(str): string or list of bytes to send to the driver.
+        """
+        # Clear the input buffer in case it junk data go in creating an offset
+        self._dev.reset_input_buffer()
         logging.debug("Sending: " + data)
         self._dev.write((data + '\n').encode('utf-8'))
-
-    @staticmethod
-    def get_configs(baudrate=DEFAULT_BAUDRATE, timeout=1):
-        """Gets available serial configurations."""
-        portlist = serial.tools.list_ports.comports()
-        available_configs = []
-        for element in portlist:
-            if element.device not in SerialDriver.used_devices:
-                available_configs.append({'port': element.device,
-                                          'baudrate': baudrate,
-                                          'timeout': timeout})
-        logging.debug("Ports available: %r", available_configs)
-        return available_configs
