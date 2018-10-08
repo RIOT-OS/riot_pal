@@ -14,8 +14,6 @@ class RiotDriver:
 
     """
 
-    used_devices = []
-
     def __init__(self):
         raise NotImplementedError()
 
@@ -30,16 +28,3 @@ class RiotDriver:
     def write(self, data):
         """Tries write data."""
         raise NotImplementedError()
-
-    @staticmethod
-    def get_configs():
-        """Gets available serial configurations."""
-        raise NotImplementedError()
-
-
-def main():
-    """Tests basic usage of the class"""
-
-
-if __name__ == "__main__":
-    main()

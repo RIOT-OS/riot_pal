@@ -4,8 +4,8 @@
 # file LICENSE in the top level directory for more details.
 # SPDX-License-Identifier:    MIT
 """Abstract Base Device for RIOT PAL
-This module is the abstract device that interfaces to a driver.  It handles
-the selection and initialzation of the driver.
+This module is the abstract device that interfaces to a driver.  It handles the
+selection and initialzation of the driver.
 
 Example:
     class ApplicationDevice(BaseDevice):
@@ -17,22 +17,24 @@ Example:
     example_use_case.show_example()
 """
 import logging
-try:
-    from . import driver_manager
-except SystemError:
-    import driver_manager
+from .serial_driver import SerialDriver
+from .riot_driver import RiotDriver
 
 
 class BaseDevice:
     """Instance for devices to connect and utilize drivers.
 
     Args:
+        driver_type(str): Selects the driver that is used on the devices.
+            'serial' uses the standard serial port, all following arguments
+            get passed through.
+            'riot' uses the riot make term system.
         *args: Variable length argument list.
         **kwargs: Arbitrary keyword arguments.
     """
 
-    def __init__(self, *args, **kwargs):
-        self._driver = driver_manager.driver_from_config(*args, **kwargs)
+    def __init__(self, driver_type='serial', *args, **kwargs):
+        self._driver = self._driver_from_config(driver_type, *args, **kwargs)
 
     def close(self):
         """Closes the device connection."""
@@ -42,7 +44,7 @@ class BaseDevice:
         """Reads data from the driver.
 
         Returns:
-            str: string of data if success, ERR string if failed
+            str: string of data if success, driver defined error if failed.
         """
         return self._driver.read()
 
@@ -54,46 +56,20 @@ class BaseDevice:
         """
         return self._driver.write(data)
 
-    def is_connected_to_board(self):
-        """Dummy - confirm if a connection is for target board."""
-        logging.warning("Check if board is connected: dummy should be"
-                        " implmeneted in subclasses")
+    @staticmethod
+    def _driver_from_config(driver_type='serial', *args, **kwargs):
+        """Returns driver instance given configuration"""
+        if driver_type == 'serial':
+            return SerialDriver(*args, **kwargs)
+        elif driver_type == 'riot':
+            return RiotDriver(*args, **kwargs)
+        elif driver_type == 'driver':
+            return kwargs['driver']
         raise NotImplementedError()
-
-    @classmethod
-    def from_autodetect(cls, *args, **dev_config):
-        """Connects to a range of possible configurations."""
-        configs = driver_manager.available_configs(*args, **dev_config)
-        logging.debug("Configs: %r", configs)
-        for config in configs:
-            for retry in range(0, 2):
-                logging.debug("Autodetect attempt: %d", retry)
-                conn = cls(**config)
-                try:
-                    if conn.is_connected_to_board():
-                        return conn
-                except Exception as err:
-                    logging.debug("Cannot connect: %r", err)
-                conn.close()
-
-        raise ValueError("Could not locate board, check if board is"
-                         "connected or is_connected_to_board is correct")
 
     @classmethod
     def copy_driver(cls, device):
         """Copies the driver instance so many devices can use one driver."""
+        # pylint: disable=W0212
         logging.debug("Cloning Driver: %r", device._driver)
-        return cls(dev_type='driver', driver=device._driver)
-
-
-def main():
-    """Tests basic usage of the class
-
-    Used for unit testing, information should be confirm with DEBUG info.
-    """
-    logging.getLogger().setLevel(logging.DEBUG)
-    BaseDevice()
-
-
-if __name__ == "__main__":
-    main()
+        return cls(driver_type='driver', driver=device._driver)

@@ -4,4 +4,4 @@ dist/
 build/
 *.egg-info
 *.eggs
-*.csv
+__pycache__
