@@ -25,18 +25,19 @@ class LLShell(BaseDevice):
 
     @staticmethod
     def _try_parse_data(data):
-        parsed_data = None
         if len(data) > 1:
             # response contains data
             try:
                 if len(data[1]) - 2 <= 8:
-                    parsed_data = int(data[1], 0)
+                    return int(data[1], 0)
+                elif data[1].startswith('0x'):
+                    data = bytearray.fromhex(data[1][2:])
+                    return list(data[::-1])
                 else:
-                    d_len = len(data[1]) - 1
-                    parsed_data = bytearray.fromhex(data[1][2:d_len])
+                    return data[1:]
             except ValueError:
-                parsed_data = data[1:]
-        return parsed_data
+                return data[1:]
+        return None
 
     @staticmethod
     def _error_msg(data):
@@ -59,7 +60,7 @@ class LLShell(BaseDevice):
                 cmd_info['result'] = self.RESULT_ERROR
                 logging.debug(self.RESULT_ERROR)
                 logging.debug(cmd_info['msg'])
-        except Exception as exc:
+        except (ValueError, TypeError, AttributeError) as exc:
             cmd_info['msg'] = "Unknown Error {}".format(exc)
             cmd_info['data'] = data[0]
             cmd_info['result'] = self.RESULT_ERROR
@@ -150,8 +151,8 @@ class LLShell(BaseDevice):
         bit_mask = int((2 ** bit_amount) - 1)
         bit_mask = bit_mask << offset
         cmd_info['data'] = cmd_info['data'] & (~bit_mask)
-        data = cmd_info['data'] | ((data << offset) & bit_mask)
-        cmd_info = self.write_bytes(index, data, bytes_to_read)
+        shifted_data = cmd_info['data'] | ((data << offset) & bit_mask)
+        cmd_info = self.write_bytes(index, shifted_data, bytes_to_read)
         cmd_sent += cmd_info['cmd']
         if cmd_info['result'] == self.RESULT_SUCCESS:
             cmd_sent += ',write_bits {} {} {} {}'.format(index, offset,

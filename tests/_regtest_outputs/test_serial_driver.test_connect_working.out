@@ -2,35 +2,29 @@ Opening with args:
 ()
 {}
 123
-
 SUCCESS
 Opening with args:
 ('/dev/ttyACM0',)
 {}
 123
-
 SUCCESS
 Opening with args:
 ()
 {'port': '/dev/ttyACM0'}
 123
-
 SUCCESS
 Opening with args:
 ('/dev/ttyACM0', 115200)
 {}
 123
-
 SUCCESS
 Opening with args:
 ('/dev/ttyACM0',)
 {'baudrate': 115200}
 123
-
 SUCCESS
 Opening with args:
 ()
 {'baudrate': 115200, 'port': '/dev/ttyACM0', 'timeout': 2}
 123
-
 SUCCESS

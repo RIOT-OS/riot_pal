@@ -8,11 +8,9 @@ serial_for_url() missing 1 required positional argument: 'url'Opening with args:
 ('ERROR', 19200)
 {}
 [Errno 2] could not open port ERROR: [Errno 2] No such file or directory: 'ERROR'Opening with args:
-('/dev/ttyACM0',)
+('ERROR',)
 {'baudrate': 19200}
-
-SUCCESS
-Opening with args:
+[Errno 2] could not open port ERROR: [Errno 2] No such file or directory: 'ERROR'Opening with args:
 ()
 {'baudrate': 19200, 'port': 'ERROR', 'timeout': 2}
 serial_for_url() missing 1 required positional argument: 'url'

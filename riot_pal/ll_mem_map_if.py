@@ -52,7 +52,7 @@ class LLMemMapIf(LLShell):
         response = None
         if size is None:
             size = cmd['total_size']
-        if cmd['is_bitfield'] is 'True':
+        if 'True' in cmd['is_bitfield']:
             response = self.read_bits(cmd['offset'],
                                       cmd['bit_offset'],
                                       cmd['bits'])
@@ -79,7 +79,7 @@ class LLMemMapIf(LLShell):
         """
         cmd = self.cmd_list[cmd_name]
         response = None
-        if cmd['is_bitfield'] is 'True':
+        if 'True' in cmd['is_bitfield']:
             response = self.write_bits(cmd['offset'],
                                        cmd['bit_offset'],
                                        cmd['bits'], data)

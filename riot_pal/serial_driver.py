@@ -9,7 +9,7 @@ This module handles generic connection and IO to the serial driver.
 import os
 import logging
 import time
-import serial
+from serial import Serial, serial_for_url, SerialException
 
 
 class SerialDriver:
@@ -44,9 +44,9 @@ class SerialDriver:
         logging.debug("Serial connection args %r -- %r", args, kwargs)
 
         try:
-            self._dev = serial.Serial(*args, **kwargs)
-        except serial.SerialException:
-            self._dev = serial.serial_for_url(*args, **kwargs)
+            self._dev = Serial(*args, **kwargs)
+        except SerialException:
+            self._dev = serial_for_url(*args, **kwargs)
         # Used to clear the cpu and mcu buffer from startup junk data
         time.sleep(0.1)
         self.write('')
@@ -66,7 +66,7 @@ class SerialDriver:
         try:
             res_bytes = self._dev.readline()
             response = res_bytes.decode("utf-8", errors="ignore")
-        except (ValueError, TypeError, serial.SerialException) as exc:
+        except (ValueError, TypeError, SerialException) as exc:
             response = 'ERR'
             logging.debug(exc)
         logging.debug("Response: %s", response.replace('\n', ''))

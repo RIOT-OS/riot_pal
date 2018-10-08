@@ -1,4 +1,9 @@
 #!/usr/bin/env python3
+# Copyright (c) 2018 Kevin Weiss, for HAW Hamburg  <kevin.weiss@haw-hamburg.de>
+#
+# This file is subject to the terms and conditions of the MIT License. See the
+# file LICENSE in the top level directory for more details.
+# SPDX-License-Identifier:    MIT
 """
     Setup file for riot_pal.
 """
@@ -10,7 +15,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name="riot_pal",
-    version="0.1.2",
+    version="0.2.0",
     author="RIOT OS",
     author_email="devel@riot-os.org",
     license="MIT",
