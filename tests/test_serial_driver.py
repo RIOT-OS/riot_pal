@@ -25,7 +25,7 @@ def _open_write_read_close(regtest, *args, **kwrgs):
         ser_drvr.close()
         regtest.write('SUCCESS\n')
     except (SerialException, TypeError) as exc:
-        regtest.write(str(exc))
+        regtest.write(str(exc) + '\n')
 
 
 def test_connect_working(regtest):

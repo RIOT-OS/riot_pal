@@ -19,6 +19,7 @@ class LLShell(BaseDevice):
     EXECUTE_CMD = "ex"
     RESET_CMD = "mcu_rst"
     SUCCESS = '0'
+    RESET_SUCCESS = '\x000'
     RESULT_SUCCESS = 'Success'
     RESULT_ERROR = 'Error'
     RESULT_TIMEOUT = 'Timeout'
@@ -37,6 +38,7 @@ class LLShell(BaseDevice):
                     return data[1:]
             except ValueError:
                 return data[1:]
+
         return None
 
     @staticmethod
@@ -48,6 +50,9 @@ class LLShell(BaseDevice):
     def _populate_cmd_info(self, data):
         cmd_info = {}
         try:
+            # handle case if reset occurs and there is a 0 in the buffer
+            if data[0] == self.RESET_SUCCESS:
+                data[0] = self.SUCCESS
             if data[0] == self.SUCCESS:
                 cmd_info['data'] = self._try_parse_data(data)
                 cmd_info['msg'] = "EOK-command success [0]"
