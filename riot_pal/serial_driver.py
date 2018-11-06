@@ -27,6 +27,13 @@ class SerialDriver:
     DEFAULT_PORT = '/dev/ttyACM0'
 
     def __init__(self, *args, **kwargs):
+        self._connect(*args, **kwargs)
+        # Used to clear the cpu and mcu buffer from startup junk data
+        time.sleep(0.1)
+        self.write('')
+        self.read()
+
+    def _connect(self, *args, **kwargs):
         if 'timeout' not in kwargs:
             kwargs['timeout'] = self.DEFAULT_TIMEOUT
         if len(args) < 2:
@@ -42,15 +49,12 @@ class SerialDriver:
                 else:
                     kwargs['port'] = self.DEFAULT_PORT
         logging.debug("Serial connection args %r -- %r", args, kwargs)
-
         try:
             self._dev = Serial(*args, **kwargs)
         except SerialException:
             self._dev = serial_for_url(*args, **kwargs)
-        # Used to clear the cpu and mcu buffer from startup junk data
-        time.sleep(0.1)
-        self.write('')
-        self.read()
+        self.args = args
+        self.kwargs = kwargs
 
     def close(self):
         """Close serial connection."""
@@ -69,6 +73,10 @@ class SerialDriver:
         except (ValueError, TypeError, SerialException) as exc:
             response = 'ERR'
             logging.debug(exc)
+        if response == '':
+            logging.debug("Reconnecting due to timeout")
+            self.close()
+            self._connect(*self.args, **self.kwargs)
         logging.debug("Response: %s", response.replace('\n', ''))
         return response
 
