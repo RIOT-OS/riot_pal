@@ -12,5 +12,5 @@ from .ll_shell import LLShell
 from .ll_mem_map_if import LLMemMapIf
 
 PHILIP_MEM_MAP_PATH = str(Path(__file__).parents[0]) + \
-                      '/mem_map/philip_mem_map.csv'
+                      '/mem_map/philip_mem_map-00_00_01.csv'
 __all__ = ['DutShell', 'LLShell', 'LLMemMapIf']
