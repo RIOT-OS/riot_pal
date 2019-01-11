@@ -25,11 +25,11 @@ class LLShell(BaseDevice):
     RESULT_TIMEOUT = 'Timeout'
 
     @staticmethod
-    def _try_parse_data(data):
+    def _try_parse_data(data, to_byte_array):
         if len(data) > 1:
             # response contains data
             try:
-                if len(data[1]) - 2 <= 8:
+                if ((len(data[1]) - 2) <= 16) and not to_byte_array:
                     return int(data[1], 0)
                 elif data[1].startswith('0x'):
                     data = bytearray.fromhex(data[1][2:])
@@ -43,18 +43,20 @@ class LLShell(BaseDevice):
 
     @staticmethod
     def _error_msg(data):
+        if data not in errno.errorcode:
+            return "Unknown Error[{}]".format(data)
         s_errcode = errno.errorcode[data]
         s_errmsg = os.strerror(data)
         return "{}-{} [{}]".format(s_errcode, s_errmsg, data)
 
-    def _populate_cmd_info(self, data):
+    def _populate_cmd_info(self, data, to_byte_array):
         cmd_info = {}
         try:
             # handle case if reset occurs and there is a 0 in the buffer
             if data[0] == self.RESET_SUCCESS:
                 data[0] = self.SUCCESS
             if data[0] == self.SUCCESS:
-                cmd_info['data'] = self._try_parse_data(data)
+                cmd_info['data'] = self._try_parse_data(data, to_byte_array)
                 cmd_info['msg'] = "EOK-command success [0]"
                 cmd_info['result'] = self.RESULT_SUCCESS
                 logging.debug(self.RESULT_SUCCESS)
@@ -73,7 +75,7 @@ class LLShell(BaseDevice):
             logging.debug(exc)
         return cmd_info
 
-    def send_cmd(self, send_cmd):
+    def send_cmd(self, send_cmd, to_byte_array=False):
         """Returns a dictionary with information from the event.
         Returns:
             dict:
@@ -94,14 +96,14 @@ class LLShell(BaseDevice):
         else:
             data = data.replace('\n', '')
             data = data.split(',')
-            cmd_info.update(self._populate_cmd_info(data))
+            cmd_info.update(self._populate_cmd_info(data, to_byte_array))
         return cmd_info
 
-    def read_bytes(self, index, size=1):
+    def read_bytes(self, index, size=1, to_byte_array=False):
         """Reads bytes in the register map."""
         logging.debug("FXN: read_bytes(%r,%r)", index, size)
         cmd = '{} {} {}'.format(self.READ_REG_CMD, index, size)
-        return self.send_cmd(cmd)
+        return self.send_cmd(cmd, to_byte_array)
 
     def write_bytes(self, index, data, size=4):
         """Writes bytes in the register map."""
@@ -113,10 +115,7 @@ class LLShell(BaseDevice):
                     data = data[0].replace('0x', '')
                     data = bytes.fromhex(data)
             for i in range(0, len(data)):
-                if len(data) - i - 1 < len(data):
-                    cmd += ' {}'.format(data[len(data) - i - 1])
-                else:
-                    cmd += ' 0'
+                cmd += ' {}'.format(data[i])
         else:
             for i in range(0, size):
                 cmd += ' {}'.format((data >> ((i) * 8)) & 0xFF)
