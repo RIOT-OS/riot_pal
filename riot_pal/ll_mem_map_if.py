@@ -40,7 +40,20 @@ class LLMemMapIf(LLShell):
                 response.append(self.read_reg(cmd))
         return response
 
-    def read_reg(self, cmd_name, offset=0, size=None):
+    @staticmethod
+    def _parse_array(data, type_size):
+        parsed_data = []
+        try:
+            elements = int(len(data)/type_size)
+            for i in range(0, elements):
+                num = int.from_bytes(data[i*type_size:(i+1)*type_size],
+                                     byteorder='little')
+                parsed_data.append(num)
+        except (ValueError, TypeError):
+            return data
+        return parsed_data
+
+    def read_reg(self, cmd_name, offset=0, size=None, to_byte_array=False):
         """Read a register defined by the memory map.
 
         Args:
@@ -51,20 +64,24 @@ class LLMemMapIf(LLShell):
         cmd = self.cmd_list[cmd_name]
         response = None
         if size is None:
-            size = cmd['total_size']
-        if 'True' in cmd['is_bitfield']:
+            if '' is cmd['total_size']:
+                size = cmd['type_size']
+            else:
+                size = cmd['total_size']
+        else:
+            if '' is not cmd['total_size']:
+                size = int(cmd['type_size']) * size
+        if '' is not cmd['bits']:
             response = self.read_bits(cmd['offset'],
                                       cmd['bit_offset'],
                                       cmd['bits'])
-        elif cmd['size'] != cmd['total_size']:
-            offset = int(cmd['offset']) + (offset * int(cmd['size']))
-            if size is None:
-                size = cmd['total_size']
-            else:
-                size = size * int(cmd['size'])
-            response = self.read_bytes(offset, size)
+        elif '' is not cmd['total_size']:
+            offset = int(cmd['offset']) + (offset * int(cmd['type_size']))
+            response = self.read_bytes(offset, size, True)
+            response['data'] = LLMemMapIf._parse_array(response['data'],
+                                                       cmd['type_size'])
         else:
-            response = self.read_bytes(cmd['offset'], cmd['total_size'])
+            response = self.read_bytes(cmd['offset'], size, to_byte_array)
         response['msg'] = 'cmd={} response={}'.format(cmd_name,
                                                       response['msg'])
         return response
@@ -79,15 +96,16 @@ class LLMemMapIf(LLShell):
         """
         cmd = self.cmd_list[cmd_name]
         response = None
-        if 'True' in cmd['is_bitfield']:
+        if '' is not cmd['bits']:
             response = self.write_bits(cmd['offset'],
                                        cmd['bit_offset'],
                                        cmd['bits'], data)
-        elif cmd['size'] != cmd['total_size']:
-            offset = int(cmd['offset']) + (offset * int(cmd['size']))
+        elif '' is not cmd['total_size']:
+            offset = int(cmd['offset']) + (offset * int(cmd['type_size']))
             response = self.write_bytes(offset, data)
         else:
-            response = self.write_bytes(cmd['offset'], data, int(cmd['size']))
+            response = self.write_bytes(cmd['offset'], data,
+                                        int(cmd['type_size']))
         response['msg'] = 'cmd={} response={}'.format(cmd_name,
                                                       response['msg'])
         return response
