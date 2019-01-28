@@ -40,13 +40,13 @@ class BaseDevice:
         """Closes the device connection."""
         self._driver.close()
 
-    def _read(self):
+    def _readline(self):
         """Reads data from the driver.
 
         Returns:
             str: string of data if success, driver defined error if failed.
         """
-        return self._driver.read()
+        return self._driver.readline()
 
     def _write(self, data):
         """Writes data to the driver.

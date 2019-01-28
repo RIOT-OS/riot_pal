@@ -1,8 +1,8 @@
 Testing a package locally
 ```
-pip uninstall riot_pal
+pip3 uninstall riot_pal
 python3 setup.py sdist
-pip install dist/riot_pal-x.x.x.tar.gz
+pip3 install dist/riot_pal-x.x.x.tar.gz
 ```
 
 Upload to pip

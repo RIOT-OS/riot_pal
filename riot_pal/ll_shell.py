@@ -86,7 +86,7 @@ class LLShell(BaseDevice):
             result - Either success, error or timeout.
         """
         self._write(send_cmd)
-        data = self._read()
+        data = self._readline()
         cmd_info = {'cmd': send_cmd}
         if data == "":
             cmd_info['msg'] = "Timeout occured"

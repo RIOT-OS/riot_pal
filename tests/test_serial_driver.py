@@ -21,7 +21,7 @@ def _open_write_read_close(regtest, *args, **kwrgs):
     try:
         ser_drvr = SerialDriver(*args, **kwrgs)
         ser_drvr.write('')
-        regtest.write(ser_drvr.read())
+        regtest.write(ser_drvr.readline())
         ser_drvr.close()
         regtest.write('SUCCESS\n')
     except (SerialException, TypeError) as exc:

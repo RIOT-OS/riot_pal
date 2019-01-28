@@ -15,7 +15,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name="riot_pal",
-    version="0.2.3",
+    version="0.2.4",
     author="RIOT OS",
     author_email="devel@riot-os.org",
     license="MIT",
