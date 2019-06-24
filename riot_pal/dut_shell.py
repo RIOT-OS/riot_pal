@@ -47,7 +47,7 @@ class DutShell(BaseDevice):
                 result - Either success, error or timeout.
         """
         self._write(send_cmd)
-        response = self._read()
+        response = self._readline()
         cmd_info = {'cmd': send_cmd, 'data': None}
         while response != '':
             if self.COMMAND in response:
@@ -66,7 +66,7 @@ class DutShell(BaseDevice):
                 cmd_info['msg'] = clean_msg.replace('\n', '')
                 cmd_info['result'] = self.RESULT_ERROR
                 break
-            response = self._read()
+            response = self._readline()
 
         if response == '':
             cmd_info['result'] = self.RESULT_TIMEOUT

@@ -31,7 +31,7 @@ class SerialDriver:
         # Used to clear the cpu and mcu buffer from startup junk data
         time.sleep(0.1)
         self.write('')
-        self.read()
+        self.readline()
 
     def _connect(self, *args, **kwargs):
         if 'timeout' not in kwargs:
@@ -61,7 +61,7 @@ class SerialDriver:
         logging.debug("Closing %s", self._dev.port)
         self._dev.close()
 
-    def read(self):
+    def readline(self):
         """Read and decode to utf-8 data.
 
         Returns:
