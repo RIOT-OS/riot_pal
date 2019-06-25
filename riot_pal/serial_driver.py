@@ -25,13 +25,10 @@ class SerialDriver:
     DEFAULT_TIMEOUT = 1
     DEFAULT_BAUDRATE = 115200
     DEFAULT_PORT = '/dev/ttyACM0'
+    DEFAULT_CONNECT_WAIT = 0
 
     def __init__(self, *args, **kwargs):
         self._connect(*args, **kwargs)
-        # Used to clear the cpu and mcu buffer from startup junk data
-        time.sleep(0.1)
-        self.write('')
-        self.readline()
 
     def _connect(self, *args, **kwargs):
         if 'timeout' not in kwargs:
@@ -48,11 +45,15 @@ class SerialDriver:
                     kwargs['port'] = os.environ['PORT']
                 else:
                     kwargs['port'] = self.DEFAULT_PORT
+
+        connect_wait = kwargs.pop('connect_wait', self.DEFAULT_CONNECT_WAIT)
         logging.debug("Serial connection args %r -- %r", args, kwargs)
         try:
             self._dev = Serial(*args, **kwargs)
         except SerialException:
             self._dev = serial_for_url(*args, **kwargs)
+        time.sleep(int(connect_wait))
+        kwargs['connect_wait'] = connect_wait
         self.args = args
         self.kwargs = kwargs
 
@@ -65,18 +66,19 @@ class SerialDriver:
         """Read and decode to utf-8 data.
 
         Returns:
-            str: string of data if success, ERR string if failed.
+            str: string of data if success, empty string if failed.
         """
         try:
             res_bytes = self._dev.readline()
             response = res_bytes.decode("utf-8", errors="ignore")
         except (ValueError, TypeError, SerialException) as exc:
-            response = 'ERR'
+            response = ''
             logging.debug(exc)
-        if response == '':
-            logging.debug("Reconnecting due to timeout")
-            self.close()
-            self._connect(*self.args, **self.kwargs)
+        else:
+            if response == '':
+                logging.debug("Reconnecting due to timeout")
+                self.close()
+                self._connect(*self.args, **self.kwargs)
         logging.debug("Response: %s", response.replace('\n', ''))
         return response
 
