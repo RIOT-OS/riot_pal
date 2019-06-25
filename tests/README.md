@@ -1,6 +1,6 @@
 Testing a package locally
 ```
-pip3 uninstall riot_pal
+pip3 uninstall -y riot_pal
 python3 setup.py sdist
 pip3 install dist/riot_pal-x.x.x.tar.gz
 ```
