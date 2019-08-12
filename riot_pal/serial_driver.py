@@ -6,7 +6,6 @@
 """Serial Driver for RIOT PAL
 This module handles generic connection and IO to the serial driver.
 """
-import os
 import logging
 import time
 from serial import Serial, serial_for_url, SerialException
@@ -32,19 +31,13 @@ class SerialDriver:
 
     def _connect(self, *args, **kwargs):
         if 'timeout' not in kwargs:
-            kwargs['timeout'] = self.DEFAULT_TIMEOUT
+            kwargs['timeout'] = SerialDriver.DEFAULT_TIMEOUT
         if len(args) < 2:
             if 'baudrate' not in kwargs:
-                if 'BAUD' in os.environ:
-                    kwargs['baudrate'] = os.environ['BAUD']
-                else:
-                    kwargs['baudrate'] = self.DEFAULT_BAUDRATE
+                kwargs['baudrate'] = SerialDriver.DEFAULT_BAUDRATE
         if len(args) == 0:
             if 'port' not in kwargs:
-                if 'PORT' in os.environ:
-                    kwargs['port'] = os.environ['PORT']
-                else:
-                    kwargs['port'] = self.DEFAULT_PORT
+                kwargs['port'] = SerialDriver.DEFAULT_PORT
 
         connect_wait = kwargs.pop('connect_wait', self.DEFAULT_CONNECT_WAIT)
         logging.debug("Serial connection args %r -- %r", args, kwargs)
@@ -79,6 +72,7 @@ class SerialDriver:
                 logging.debug("Reconnecting due to timeout")
                 self.close()
                 self._connect(*self.args, **self.kwargs)
+                raise TimeoutError
         logging.debug("Response: %s", response.replace('\n', ''))
         return response
 

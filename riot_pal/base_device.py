@@ -17,8 +17,14 @@ Example:
     example_use_case.show_example()
 """
 import logging
-from .serial_driver import SerialDriver
-from .riot_driver import RiotDriver
+try:
+    from .serial_driver import SerialDriver
+except ImportError:
+    from serial_driver import SerialDriver
+try:
+    from .riot_driver import RiotDriver
+except ImportError:
+    from riot_driver import RiotDriver
 
 
 class BaseDevice:
@@ -33,8 +39,8 @@ class BaseDevice:
         **kwargs: Arbitrary keyword arguments.
     """
 
-    def __init__(self, driver_type='serial', *args, **kwargs):
-        self._driver = self._driver_from_config(driver_type, *args, **kwargs)
+    def __init__(self, *args, **kwargs):
+        self._driver = self._driver_from_config(*args, **kwargs)
 
     def close(self):
         """Closes the device connection."""
@@ -57,8 +63,10 @@ class BaseDevice:
         return self._driver.write(data)
 
     @staticmethod
-    def _driver_from_config(driver_type='serial', *args, **kwargs):
+    def _driver_from_config(*args, **kwargs):
         """Returns driver instance given configuration"""
+        driver_type = kwargs.pop('driver_type', 'serial')
+
         if driver_type == 'serial':
             return SerialDriver(*args, **kwargs)
         elif driver_type == 'riot':
