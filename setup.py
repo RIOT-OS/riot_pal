@@ -15,7 +15,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name="riot_pal",
-    version="0.2.4",
+    version="0.3.0",
     author="RIOT OS",
     author_email="devel@riot-os.org",
     license="MIT",
@@ -37,4 +37,7 @@ setup(
     setup_requires=["pytest-runner"],
     tests_require=["pytest", "pytest-regtest", "pprint"],
     install_requires=['pyserial'],
+    entry_points={
+        'console_scripts': ['dut_pyshell=riot_pal.dut_pyshell:main'],
+    }
 )

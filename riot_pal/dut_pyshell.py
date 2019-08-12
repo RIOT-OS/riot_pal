@@ -203,18 +203,6 @@ class DutPyShell(cmd.Cmd):
             self._print_func_result_success(results)
 
 
-PARSER = argparse.ArgumentParser()
-
-LOG_LEVELS = ('debug', 'info', 'warning', 'error', 'fatal', 'critical')
-PARSER.add_argument('--loglevel', '-l', choices=LOG_LEVELS, default='warning',
-                    help='Python logger log level')
-PARSER.add_argument('--port', '-p', help='Specifies the serial port',
-                    default=None)
-PARSER.add_argument('--rawdata', '-r', default=False,
-                    action='store_true',
-                    help='Shows unfilted data, usually raw json')
-
-
 def _exit_cmd_loop():
     if readline:
         try:
@@ -225,11 +213,20 @@ def _exit_cmd_loop():
 
 def main():
     """Main program"""
-    pargs = PARSER.parse_args()
 
-    if pargs.loglevel:
-        loglevel = logging.getLevelName(pargs.loglevel.upper())
-        logging.basicConfig(level=loglevel)
+    parser = argparse.ArgumentParser()
+
+    log_levels = ('debug', 'info', 'warning', 'error', 'fatal', 'critical')
+    parser.add_argument('--loglevel', '-l', choices=log_levels,
+                        default='warning', help='Python logger log level')
+    parser.add_argument('--port', '-p', help='Specifies the serial port',
+                        default=None)
+    parser.add_argument('--rawdata', '-r', default=False,
+                        action='store_true',
+                        help='Shows unfilted data, usually raw json')
+    pargs = parser.parse_args()
+
+    logging.basicConfig(level=getattr(logging, pargs.loglevel.upper()))
     try:
         DutPyShell(port=pargs.port, rawdata=pargs.rawdata).cmdloop()
         _exit_cmd_loop()
