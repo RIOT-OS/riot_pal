@@ -5,6 +5,7 @@
 # SPDX-License-Identifier:    MIT
 """Helper functions for running tests on RIOT PAL."""
 
+
 def _try_parse_int(val):
     try:
         return int(val, 0)
@@ -32,7 +33,8 @@ def try_add(val):
         val(int, str, list): Value to add the number to.
 
     Return:
-        int: If successful returns the val + 1.  If failed just retruns the val.
+        int: If successful returns the val + 1.
+             If failed just retruns the val.
     """
     try:
         return _try_parse_int(val)+1
