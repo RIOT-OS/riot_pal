@@ -13,9 +13,9 @@ try:
 except ImportError:
     from base_device import BaseDevice
 
-RESULT_SUCCESS = 'SUCCESS'
-RESULT_ERROR = 'ERROR'
-RESULT_TIMEOUT = 'TIMEOUT'
+RESULT_SUCCESS = 'Success'
+RESULT_ERROR = 'Error'
+RESULT_TIMEOUT = 'Timeout'
 
 
 class ShellParser:
