@@ -57,31 +57,32 @@ class ShellParser:
         # pylint: disable=W0212
         self.dev._write(send_cmd)
         # pylint: disable=W0212
-        response = self.dev._readline()
-        cmd_info = {'cmd': send_cmd, 'data': None}
-        while response != '':
-            if self.COMMAND in response:
-                cmd_info['msg'] = response.replace(self.COMMAND, '')
-                cmd_info['cmd'] = cmd_info['msg'].replace('\n', '')
-
-            if self.SUCCESS in response:
-                clean_msg = response.replace(self.SUCCESS, '')
-                cmd_info['msg'] = clean_msg.replace('\n', '')
-                cmd_info['result'] = RESULT_SUCCESS
-                cmd_info['data'] = self._try_parse_data(cmd_info['msg'])
-                break
-
-            if self.ERROR in response:
-                clean_msg = response.replace(self.ERROR, '')
-                cmd_info['msg'] = clean_msg.replace('\n', '')
-                cmd_info['result'] = RESULT_ERROR
-                break
-            # pylint: disable=W0212
+        try:
             response = self.dev._readline()
+            cmd_info = {'cmd': send_cmd, 'data': None}
+            while response != '':
+                if self.COMMAND in response:
+                    cmd_info['msg'] = response.replace(self.COMMAND, '')
+                    cmd_info['cmd'] = cmd_info['msg'].replace('\n', '')
 
-        if response == '':
+                if self.SUCCESS in response:
+                    clean_msg = response.replace(self.SUCCESS, '')
+                    cmd_info['msg'] = clean_msg.replace('\n', '')
+                    cmd_info['result'] = RESULT_SUCCESS
+                    cmd_info['data'] = self._try_parse_data(cmd_info['msg'])
+                    break
+
+                if self.ERROR in response:
+                    clean_msg = response.replace(self.ERROR, '')
+                    cmd_info['msg'] = clean_msg.replace('\n', '')
+                    cmd_info['result'] = RESULT_ERROR
+                    break
+                # pylint: disable=W0212
+                response = self.dev._readline()
+        except TimeoutError:
             cmd_info['result'] = RESULT_TIMEOUT
             logging.debug(RESULT_TIMEOUT)
+
         return cmd_info
 
 

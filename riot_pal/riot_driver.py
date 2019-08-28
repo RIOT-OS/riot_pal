@@ -36,7 +36,7 @@ class RiotDriver:
             response = response.replace('\r', '')
         except (ValueError, TypeError, pexpect.TIMEOUT) as exc:
             logging.debug(exc)
-            response = "ERR"
+            raise TimeoutError
         logging.debug("Response: %s", response)
         return response
 
