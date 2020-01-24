@@ -57,8 +57,8 @@ class ShellParser:
         # pylint: disable=W0212
         self.dev._write(send_cmd)
         # pylint: disable=W0212
+        cmd_info = {'cmd': send_cmd, 'data': None}
         try:
-            cmd_info = {'cmd': send_cmd, 'data': None}
             response = self.dev._readline()
             while response != '':
                 if self.COMMAND in response:
